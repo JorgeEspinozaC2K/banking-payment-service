@@ -3,32 +3,21 @@ package com.banking.payment.service.app.entity;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Document(collection = "credits")
+@Data
 public class Credit {
 	
 	@Id
-	private String id;
+private String id;
 	
 	private Boolean forCard = false;
 	
-	private String cardNumber;
+	private Long cardNumber;
 	
 	private String customerId;
-	
-	private String requestId;
 	
 	private Boolean fullyPaid = false;
 	
@@ -46,10 +35,8 @@ public class Credit {
 	
 	private Double interest;
 	
-	//month effective tax
 	private Double met;
 	
-	//capital restoring factor
 	private Double crf;
 	
 	private Integer actualQuota;
@@ -62,12 +49,9 @@ public class Credit {
     
 	private Double nextMinPaymentAmount;
 	
-	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date fullyPaymentDate;
 	
-	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date updateAt;
 	
-	@JsonFormat(pattern = "yyyy-MM-dd")
 	private Date createAt;
 }

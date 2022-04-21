@@ -25,22 +25,10 @@ public class Payment {
 	private String creditId;
 	
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date paymentDate;
+	private Date paymentDate = new Date();
 	
 	private Integer quota;
 	
-	private Double quotaAmount;
-	
-	private Double minPaymentAmount;
-	
 	private Double paidAmount;
-	
-	private Double interestAmount;
-	
-	private Double totalAmount;
-	
-	private Double remainingAmount;
-	
-	private Integer remainingQuotas;
 	
 }

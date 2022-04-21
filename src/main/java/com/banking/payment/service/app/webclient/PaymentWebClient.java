@@ -18,4 +18,12 @@ public class PaymentWebClient {
 				.retrieve()
 				.bodyToMono(Credit.class);
 	}
+	
+	public Mono<Credit> saveCredit(Credit credit){
+		return paymentWebClient.build()
+				.post()
+				.uri("http://localhost:8084/api/v1/credit/save",credit)
+				.retrieve()
+				.bodyToMono(Credit.class);
+	}
 }

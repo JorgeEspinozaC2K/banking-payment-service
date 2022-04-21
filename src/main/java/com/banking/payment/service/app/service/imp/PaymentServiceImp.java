@@ -46,7 +46,19 @@ public class PaymentServiceImp implements PaymentService {
 
 	@Override
 	public Mono<Payment> findPaymentById(String id) {
-		return paymentRepository.findById(id);
+		return paymentRepository.findById(id)
+				.defaultIfEmpty(new Payment())
+				.flatMap(_payment ->{
+					if (_payment.getId()==null) {
+						return Mono.error(new InterruptedException("Payment doesn't exist"));
+					}else {
+						return Mono.just(_payment);
+					}
+				})
+				.onErrorResume(_ex ->{
+					log.error(_ex.getMessage());
+					return Mono.empty();
+				});
 	}
 
 	@Override
@@ -58,10 +70,31 @@ public class PaymentServiceImp implements PaymentService {
 					if (_credit.getId() == null) {
 						return Mono.error(new InterruptedException("Request failed credit with ID: " 
 					+ payment.getCreditId() + " does not exist."));
-					}else {
-						return Mono.just(payment);
-					}
-				});
+					} else {
+						_credit.setRemainingLoan(_credit.getRemainingLoan()-payment.getPaidAmount());
+						payment.setQuota(_credit.getActualQuota()+1);
+						_credit.setActualQuota(payment.getQuota());
+						_credit.setRemainingQuotas(_credit.getRemainingQuotas()-1);
+						payment.setQuota(_credit.getActualQuota());
+						return paymentWebClient.saveCredit(_credit)
+								.defaultIfEmpty(new Credit())
+								.flatMap(_cr ->{
+									if (_cr.getId() == null) {
+										return Mono.error(new InterruptedException("Error al actualizar el credito"));
+									}
+									return paymentRepository.save(payment)
+											.defaultIfEmpty(new Payment())
+											.flatMap(_pay ->{
+												if(_pay == null) {
+													return Mono.error(new InterruptedException("Error at payment save"));
+												}
+												return paymentRepository.save(payment);
+											});
+								}).onErrorResume(_ex->{
+									log.error(_ex.getMessage());
+									return Mono.empty();
+								});
+						}});
 	}
 
 	@Override
