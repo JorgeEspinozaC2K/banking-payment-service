@@ -14,7 +14,7 @@ public class PaymentWebClient {
 	public Mono<Credit> findCredit(String id){
 		return paymentWebClient.build()
 				.get()
-				.uri("http://localhost:8082/{id}",id)
+				.uri("http://localhost:8084/api/v1/credit/{id}",id)
 				.retrieve()
 				.bodyToMono(Credit.class);
 	}

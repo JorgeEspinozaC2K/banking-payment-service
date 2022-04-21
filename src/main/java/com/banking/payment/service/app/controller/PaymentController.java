@@ -23,27 +23,27 @@ public class PaymentController {
 	private PaymentService paymentService;
 	
 	@GetMapping()
-	public Flux<Payment> paymentIndex(){
+	public Flux<Payment> index(){
 		return paymentService.findAllPyments();
 	}
 	
-	@GetMapping("/payments/cid/{id}")
-	public Flux<Payment> searchPaymentsByCreditId(@PathVariable String id){
+	@GetMapping("/cid/{id}")
+	public Flux<Payment> searchByCreditId(@PathVariable String id){
 		return paymentService.findPaymentByCreditId(id);
 	}
 	
-	@GetMapping("/payments/{id}")
-	public Mono<Payment> searchPaymentByPaymentId(@PathVariable String id){
+	@GetMapping("/{id}")
+	public Mono<Payment> searchPaymentById(@PathVariable String id){
 		return paymentService.findPaymentById(id);
 	}
 	
-	@PostMapping("/payments/save")
-	public Mono<Payment> savePayment(@RequestBody Payment payment){
+	@PostMapping("/save")
+	public Mono<Payment> save(@RequestBody Payment payment){
 		return paymentService.savePayment(payment);
 	}
 	
-	@DeleteMapping("/payments/delete")
-	public Mono<Void> deletePayment(@RequestBody Payment payment){
+	@DeleteMapping("/delete")
+	public Mono<Void> delete(@RequestBody Payment payment){
 		return paymentService.deletePayment(payment);
 	}
 }
