@@ -3,6 +3,7 @@ package com.banking.payment.service.app.service.imp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.banking.payment.service.app.entity.Credit;
 import com.banking.payment.service.app.model.Payment;
@@ -13,6 +14,7 @@ import com.banking.payment.service.app.webclient.PaymentWebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Service
 public class PaymentServiceImp implements PaymentService {
 	
 	private static final Logger log = LoggerFactory.getLogger(PaymentServiceImp.class);
