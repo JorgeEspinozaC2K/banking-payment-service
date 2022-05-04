@@ -7,7 +7,6 @@ import reactor.core.publisher.Mono;
 
 public interface PaymentService{
 	
-	
 	public Flux<Payment> findAllPyments();
 	
 	public Flux<Payment> findPaymentByCreditId(String creditId);
