@@ -37,6 +37,11 @@ public class PaymentController {
 		return paymentService.findPaymentById(id);
 	}
 	
+	@GetMapping("/lastTen/{cardNumber}")
+	public Flux<Payment> findLastTen(@PathVariable Long cardNumber){
+		return paymentService.findAllTenLast(cardNumber);
+	}
+	
 	@PostMapping("/save")
 	public Mono<Payment> save(@RequestBody Payment payment){
 		return paymentService.savePayment(payment);

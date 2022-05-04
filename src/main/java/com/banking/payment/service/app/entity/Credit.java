@@ -2,16 +2,13 @@ package com.banking.payment.service.app.entity;
 
 import java.util.Date;
 
-import org.springframework.data.annotation.Id;
-
 import lombok.Data;
 
 
 @Data
 public class Credit {
 	
-	@Id
-private String id;
+	private String id;
 	
 	private Boolean forCard = false;
 	

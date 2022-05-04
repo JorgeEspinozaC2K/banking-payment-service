@@ -1,6 +1,6 @@
 package com.banking.payment.service.app.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -22,10 +22,16 @@ public class Payment {
 	@Id
 	private String id;
 	
+	private Boolean extern;
+	
+	private String bank = "This bank";
+	
 	private String creditId;
 	
+	private Long cardNumber;
+	
 	@JsonFormat(pattern = "yyyy-MM-dd")
-	private Date paymentDate = new Date();
+	private LocalDate paymentDate = LocalDate.now();
 	
 	private Integer quota;
 	

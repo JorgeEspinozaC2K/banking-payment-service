@@ -17,5 +17,7 @@ public interface PaymentService{
 	public Mono<Payment> savePayment(Payment Payment);
 	
 	public Mono<Void> deletePayment(Payment payment);
+	
+	public Flux<Payment> findAllTenLast(Long cardNumber);
 
 }

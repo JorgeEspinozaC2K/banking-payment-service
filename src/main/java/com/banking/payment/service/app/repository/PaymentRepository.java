@@ -15,4 +15,11 @@ public interface PaymentRepository extends ReactiveMongoRepository<Payment, Stri
 	 */
 	public Flux<Payment> findByCreditId(String creditId);
 	
+	/**
+	 * 
+	 * @param customerId
+	 * @return
+	 */
+	public Flux<Payment> findTop10ByCardNumberOrderByPaymentDateDesc(Long cardNumber);
+	
 }

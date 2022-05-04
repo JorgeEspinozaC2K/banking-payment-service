@@ -73,25 +73,26 @@ public class PaymentServiceImp implements PaymentService {
 						return Mono.error(new InterruptedException("Request failed credit with ID: " 
 					+ payment.getCreditId() + " does not exist."));
 					} else {
+						payment.setCardNumber(_credit.getCardNumber());
 						_credit.setRemainingLoan(_credit.getRemainingLoan()-payment.getPaidAmount());
 						payment.setQuota(_credit.getActualQuota()+1);
 						_credit.setActualQuota(payment.getQuota());
 						_credit.setRemainingQuotas(_credit.getRemainingQuotas()-1);
 						payment.setQuota(_credit.getActualQuota());
+						
 						return paymentWebClient.saveCredit(_credit)
 								.defaultIfEmpty(new Credit())
 								.flatMap(_cr ->{
 									if (_cr.getId() == null) {
-										return Mono.error(new InterruptedException("Error al actualizar el credito"));
+										return Mono.error(new InterruptedException("Error updating this credit"));
+									}
+									if (payment.getExtern()) {
+										if (payment.getBank() == null) {
+											return Mono.error(new InterruptedException("Error procesing this data"));
+										}
 									}
 									return paymentRepository.save(payment)
-											.defaultIfEmpty(new Payment())
-											.flatMap(_pay ->{
-												if(_pay == null) {
-													return Mono.error(new InterruptedException("Error at payment save"));
-												}
-												return paymentRepository.save(payment);
-											});
+											.switchIfEmpty(Mono.error(new InterruptedException("Error at payment save")));
 								}).onErrorResume(_ex->{
 									log.error(_ex.getMessage());
 									return Mono.empty();
@@ -102,6 +103,11 @@ public class PaymentServiceImp implements PaymentService {
 	@Override
 	public Mono<Void> deletePayment(Payment payment) {
 		return paymentRepository.delete(payment);
+	}
+
+	@Override
+	public Flux<Payment> findAllTenLast(Long cardNumber) {
+		return paymentRepository.findTop10ByCardNumberOrderByPaymentDateDesc(cardNumber);
 	}
 	
 }
