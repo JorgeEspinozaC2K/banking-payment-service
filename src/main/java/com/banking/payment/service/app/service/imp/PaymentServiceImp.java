@@ -78,18 +78,17 @@ public class PaymentServiceImp implements PaymentService {
 						payment.setQuota(_credit.getActualQuota()+1);
 						_credit.setActualQuota(payment.getQuota());
 						_credit.setRemainingQuotas(_credit.getRemainingQuotas()-1);
-						payment.setQuota(_credit.getActualQuota());
 						
+						if (payment.getExtern()) {
+							if (payment.getBank() == null) {
+								return Mono.error(new InterruptedException("Error procesing this data"));
+							}
+						}
 						return paymentWebClient.saveCredit(_credit)
 								.defaultIfEmpty(new Credit())
 								.flatMap(_cr ->{
 									if (_cr.getId() == null) {
 										return Mono.error(new InterruptedException("Error updating this credit"));
-									}
-									if (payment.getExtern()) {
-										if (payment.getBank() == null) {
-											return Mono.error(new InterruptedException("Error procesing this data"));
-										}
 									}
 									return paymentRepository.save(payment)
 											.switchIfEmpty(Mono.error(new InterruptedException("Error at payment save")));
