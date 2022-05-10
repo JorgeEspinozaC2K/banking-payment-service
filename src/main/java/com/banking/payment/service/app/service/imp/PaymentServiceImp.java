@@ -70,15 +70,18 @@ public class PaymentServiceImp implements PaymentService {
 				.defaultIfEmpty(new Credit())
 				.flatMap(_credit ->{
 					if (_credit.getId() == null) {
-						return Mono.error(new InterruptedException("Request failed credit with ID: " 
-					+ payment.getCreditId() + " does not exist."));
-					} else {
-						payment.setCardNumber(_credit.getCardNumber());
-						_credit.setRemainingLoan(_credit.getRemainingLoan()-payment.getPaidAmount());
-						payment.setQuota(_credit.getActualQuota()+1);
-						_credit.setActualQuota(payment.getQuota());
-						_credit.setRemainingQuotas(_credit.getRemainingQuotas()-1);
 						
+						return Mono.error(new InterruptedException("Request failed credit with ID: " 
+								+ payment.getCreditId() + " does not exist."));
+						
+					} else {
+						
+							payment.setCardNumber(_credit.getCardNumber());
+							_credit.setRemainingLoan(_credit.getRemainingLoan()-payment.getPaidAmount());
+							payment.setQuota(_credit.getActualQuota()+1);
+							_credit.setActualQuota(payment.getQuota());
+							_credit.setRemainingQuotas(_credit.getRemainingQuotas()-1);
+							
 						if (payment.getExtern()) {
 							if (payment.getBank() == null) {
 								return Mono.error(new InterruptedException("Error procesing this data"));
