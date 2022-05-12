@@ -1,29 +1,46 @@
 package com.banking.payment.service.app.webclient;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClient.Builder;
 
 import com.banking.payment.service.app.entity.Credit;
 
 import reactor.core.publisher.Mono;
 
+@Service
 public class PaymentWebClient {
 	
-	private Builder paymentWebClient = WebClient.builder();
+	@SuppressWarnings("rawtypes")
+	@Autowired
+	private ReactiveCircuitBreakerFactory reactiveCircuitBreakerFactory;
 	
 	public Mono<Credit> findCredit(String id){
-		return paymentWebClient.build()
+		return WebClient
+				.create("http://localhost:8080")
 				.get()
-				.uri("http://localhost:8080/credit/{id}",id)
+				.uri("/credit/{id}",id)
 				.retrieve()
-				.bodyToMono(Credit.class);
+				.bodyToMono(Credit.class)
+				.transformDeferred(it -> {
+                    ReactiveCircuitBreaker rcb = reactiveCircuitBreakerFactory.create("customDefaultCB");
+                    return rcb.run(it, throwable -> Mono.empty());
+                });
 	}
 	
 	public Mono<Credit> saveCredit(Credit credit){
-		return paymentWebClient.build()
+		return WebClient
+				.create("http://localhost:8080")
 				.post()
-				.uri("http://localhost:8080/credit/save",credit)
+				.uri("/credit/save")
+				.body(Mono.just(credit),Credit.class)
 				.retrieve()
-				.bodyToMono(Credit.class);
+				.bodyToMono(Credit.class)
+				.transformDeferred(it -> {
+                    ReactiveCircuitBreaker rcb = reactiveCircuitBreakerFactory.create("customDefaultCB");
+                    return rcb.run(it, throwable -> Mono.empty());
+                });
 	}
 }
